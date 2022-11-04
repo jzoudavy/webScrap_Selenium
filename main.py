@@ -1,4 +1,7 @@
+import numpy as np
+from Tools.scripts.dutree import display
 from selenium import webdriver
+from selenium.common import ElementClickInterceptedException, NoSuchElementException
 
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
@@ -15,17 +18,21 @@ def scrap_pages(driver):
     if listings[-1].text.split('/n')[0] == '': del listings[-1]
 
     for listing in listings:
-        print(listing.text.split('\n'))
-        price = listing.text.split('\n')[0]
-
-        prop_type = listing.text.split('\n')[1]
-        addr = listing.text.split('\n')[2]
-        city = listing.text.split('\n')[3]
-        sector = listing.text.split('\n')[4]
-        bedrooms = listing.text.split('\n')[5]
-        bathrooms = listing.text.split('\n')[6]
+        price=listing.find_element(By.XPATH, ".//div[@class='price']/meta[@itemprop='price']").text
+        mls = listing.find_element(By.XPATH, ".//div[@id='MlsNumberNoStealth']/p").text
+        prop_type = listing.find_element(By.XPATH, ".//div[@class='location-container']/span[@itemprop='category']").text
+        addr = listing.find_element(By.XPATH, ".//div[@class='location-container']/span[@class='address']").text
+        city = addr.split('\n')[1]
+        sector = addr.split('\n')[2]
+        if prop_type == 'Land for sale' or prop_type == 'Lot for sale':
+            bedrooms = 'NA'
+            bathrooms = 'NA'
+        else:
+            bedrooms = listing.find_element(By.XPATH, ".//div[@class='cac']").text
+            bathrooms = listing.find_element(By.XPATH, ".//div[@class='sdb']").text
 
         listing_item = {
+            'mls':mls,
             'price': price,
             'Address': addr,
             'property Type': prop_type,
@@ -53,9 +60,22 @@ if __name__ == '__main__':
     total_pages = driver.find_element(By.CLASS_NAME,'pager-current').text.split('/')[1].strip() 
     
     for i in range(1,int(total_pages)):
-        scrap_pages(driver)
-        driver.find_element(By.CSS_SELECTOR,'li.next> a').click()
-        time.sleep(0.8)
+
+        try:
+            scrap_pages(driver)
+            driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
+            time.sleep(0.8)
+        except ElementClickInterceptedException as initial_error:
+            try:
+                if len(driver.find_elements(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']")) > 0:
+                    driver.find_element(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']").click()
+                    time.sleep(0.6)
+                print('pop-up closed')
+                scrap_pages(driver)
+                driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
+                time.sleep(0.8)
+            except NoSuchElementException:
+                raise initial_error
 
 
     df = pd.DataFrame(centris_list)
