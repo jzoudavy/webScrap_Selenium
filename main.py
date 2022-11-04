@@ -21,6 +21,7 @@ def scrap_pages(driver):
     for listing in listings:
         price = listing.find_element(By.XPATH, ".//div[@class='price']/meta[@itemprop='price']").text
         mls = listing.find_element(By.XPATH, ".//div[@id='MlsNumberNoStealth']/p").text
+        print(f"mls is {mls} price is {price}")
         prop_type = listing.find_element(By.XPATH,
                                          ".//div[@class='location-container']/span[@itemprop='category']").text
         addr = listing.find_element(By.XPATH, ".//div[@class='location-container']/span[@class='address']").text
@@ -51,7 +52,7 @@ def scrap_pages(driver):
 if __name__ == '__main__':
     chrome_options = Options()
     chrome_options.add_experimental_option("detach", True)
-    # chrome_options.add_argument("headless")
+    #chrome_options.add_argument("headless")
 
     driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
 
@@ -66,16 +67,16 @@ if __name__ == '__main__':
         try:
             scrap_pages(driver)
             driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
-            time.sleep(0.5)
+            time.sleep(0.8)
         except ElementClickInterceptedException as initial_error:
             try:
                 if len(driver.find_elements(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']")) > 0:
                     driver.find_element(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']").click()
-                    time.sleep(0.5)
+                    time.sleep(0.8)
                 print('pop-up closed')
                 scrap_pages(driver)
                 driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
-                time.sleep(0.5)
+                time.sleep(0.8)
             except NoSuchElementException:
                 raise initial_error
     df = pd.DataFrame(centris_list)
@@ -84,4 +85,4 @@ if __name__ == '__main__':
     # storing into sql
     con = sl.connect('my-test.db')
     with con:
-        df.to_sql('mls', con)
+        df.to_sql('1stTable2', con)
