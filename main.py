@@ -75,33 +75,59 @@ def flag_new_listings(latest_file, secondLatest_file):
     latest_panda = pd.read_pickle(latest_file)
     secondLatest_panda = pd.read_pickle(secondLatest_file)
 
-    print(latest_panda)
+
     print(secondLatest_panda)
+    print(latest_panda)
 
     latest_panda.set_index('mls')
     latest_panda.sort_index()
     secondLatest_panda.set_index('mls')
     secondLatest_panda.sort_index()
 
+    price_changed_search_result=[]
+    newListing_search_result=[]
+    removedListing_search_result=[]
 
+    # no new MLS listings, check if price changed
     if latest_panda.size == secondLatest_panda.size:
-        #no new MLS listings, check if price changed
-        df_diff = latest_panda.compare(secondLatest_panda)
 
-        print(df_diff)
+        latest_diff=latest_panda.compare(secondLatest_panda)
+        for index in latest_diff.index:
+            _mls=latest_panda.loc[index]['mls']
+            _new_price=latest_panda.loc[index]['price']
+            _old_price=secondLatest_panda.loc[index]['price']
+            _content_str=f'listing {_mls} has changed its price from {_old_price} to {_new_price}'
+            price_changed_search_result.append(_content_str)
 
-    if latest_panda.size > secondLatest_panda.size: pass
-        #new Listings
+    # returns new listings in latest_panda
+    if latest_panda.size > secondLatest_panda.size:
+        new_listing_panda=pd.concat([secondLatest_panda, latest_panda]).drop_duplicates(keep=False)
+        print(new_listing_panda)
+        for index in new_listing_panda.index:
+            _mls=new_listing_panda.loc[index]['mls']
+            _price=new_listing_panda.loc[index]['price']
 
-    if latest_panda.size < secondLatest_panda.size: pass
-        #removed listings
+            _content_str = f'New listing {_mls} is on sale at {_price}'
+            newListing_search_result.append(_content_str)
+
+
+
+    #removed listings
+    if latest_panda.size < secondLatest_panda.size:
+        removed_listing_panda=pd.concat([latest_panda, secondLatest_panda]).drop_duplicates(keep=False)
+        for index in removed_listing_panda.index:
+            _mls=removed_listing_panda.loc[index]['mls']
+
+            _content_str = f'Listing {_mls} has disappeared'
+            removedListing_search_result.append(_content_str)
 
 
 
 
 
-
-    sendEmail(subject='MLS Listing change Detected', content=df_diff.to_string())
+    sendEmail(subject='MLS Price Changed', content=price_changed_search_result)
+    sendEmail(subject='MLS New Listing added', content=newListing_search_result)
+    sendEmail(subject='MLS Removed listings', content=removedListing_search_result)
 
 
 
