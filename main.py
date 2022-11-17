@@ -125,9 +125,7 @@ def flag_new_listings(latest_file, secondLatest_file):
 
 
 
-    sendEmail(subject='MLS Price Changed', content=price_changed_search_result)
-    sendEmail(subject='MLS New Listing added', content=newListing_search_result)
-    sendEmail(subject='MLS Removed listings', content=removedListing_search_result)
+    send_template_email(price_changed_search_result,newListing_search_result,removedListing_search_result)
 
 
 
