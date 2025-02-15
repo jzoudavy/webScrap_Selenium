@@ -180,10 +180,14 @@ if __name__ == '__main__':
 
         chrome_options = Options()
         chrome_options.add_experimental_option("detach", True)
+        #headless and block anti-headless
+        chrome_options.add_argument('--headless')
+        user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+        chrome_options.add_argument(f'user-agent={user_agent}')
 
         driver_path = 'C:\\WebDriver\\bin\\chromedriver132\\chromedriver.exe'
         driver_path_ubuntu = r'/usr/lib/chromium-browser/chromedriver'
-        options = webdriver.ChromeOptions()
+
         if os.path.exists(driver_path):
             service = ChromeService(executable_path=driver_path)
         else:
@@ -196,7 +200,7 @@ if __name__ == '__main__':
         url = 'https://www.centris.ca/en/properties~for-sale~brossard?view=Thumbnail'
 
         driver.get(url)
-        time.sleep(2)
+        time.sleep(5)
         driver.find_element(By.ID, 'didomi-notice-agree-button').click()
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
