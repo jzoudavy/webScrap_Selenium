@@ -175,7 +175,7 @@ if __name__ == '__main__':
         format="%(asctime)s - %(levelname)s - %(message)s"
     )
 
-    skip_scrape= True
+    skip_scrape= False
     if not skip_scrape:
 
 
