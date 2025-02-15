@@ -17,19 +17,32 @@ import uuid
 import glob
 import os
 import os.path
+from jinja2 import Template, Environment, FileSystemLoader
+
 
 def interesting_property_determinator(latest_panda, new_entries, changed_prices_df):
     interesting=latest_panda.loc[new_entries]['bedrooms'] >= 2
-    x= changed_prices_df.index.intersection(new_entries)
-
-    if not x.empty:
-        px_interesting= changed_prices_df.loc[new_entries]['bedrooms'] >= 2
-        logging.info(px_interesting)
-
-    logging.info(f"Actually interesting: ")
-    logging.info(interesting)
+    filtered_list = interesting.index.tolist()
 
 
+    logging.info(f"2 bedroom or more: ")
+    logging.info(filtered_list)
+
+    #find px changes
+    px_change= changed_prices_df.to_dict(orient='index')
+    print(px_change)
+
+
+
+    # load templates folder to environment (security measure)
+    env = Environment(loader=FileSystemLoader('template'))
+    # load the `index.jinja` template
+    index_template = env.get_template('index.jinja')
+    output_from_parsed_template = index_template.render(mls=filtered_list, data =px_change)
+
+    # write the parsed template
+    with open("index.html", "w") as indexPage:
+        indexPage.write(output_from_parsed_template)
 
 
 
@@ -58,7 +71,7 @@ def scrap_pages(driver):
         price = listing.find_element(By.XPATH, './/*[@itemprop="price"]//following-sibling::span[1]').text
 
         mls = listing.find_element(By.XPATH, './/*[@class="a-more-detail"]').get_attribute('data-mlsnumber')
-        logging.info(f"Trowling through centris listing page: {mls}")
+        #logging.info(f"Trowling through centris listing page: {mls}")
 
 
         prop_type = listing.find_element(By.XPATH,".//div[@class='location-container']/div[@class='category']").text
@@ -164,7 +177,7 @@ if __name__ == '__main__':
     )
 
     skip_scrape= True
-    if skip_scrape:
+    if not skip_scrape:
 
 
 
@@ -209,7 +222,7 @@ if __name__ == '__main__':
         for item in centris_list:
             mls=item['mls']
             summaryURL = f'https://www.centris.ca/en/condos~for-sale~brossard/{mls}?view=Summary'
-            logging.info(f"Getting detailed information for : {summaryURL}")
+            #logging.info(f"Getting detailed information for : {summaryURL}")
 
             driver.get(summaryURL)
             time.sleep(1)
