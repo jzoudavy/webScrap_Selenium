@@ -27,7 +27,6 @@ def interesting_property_determinator(latest_panda, new_entries, changed_prices_
 
     #find px changes
     px_change= changed_prices_df.to_dict(orient='index')
-    print(px_change)
 
 
 
