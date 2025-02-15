@@ -9,14 +9,12 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
 import pandas as pd
-from pathlib import Path
 from datetime import datetime
-from datetime import timedelta
 import uuid
 import glob
 import os
 import os.path
-from jinja2 import Template, Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 
 
 def interesting_property_determinator(latest_panda, new_entries, changed_prices_df):
