@@ -17,8 +17,6 @@ import uuid
 import glob
 import os
 import os.path
-from os import path
-from send_email import *
 
 def interesting_property_determinator(latest_panda, new_entries, changed_prices_df):
     interesting=latest_panda.loc[new_entries]['bedrooms'] >= 2
@@ -30,6 +28,8 @@ def interesting_property_determinator(latest_panda, new_entries, changed_prices_
 
     logging.info(f"Actually interesting: ")
     logging.info(interesting)
+
+
 
 
 
