@@ -167,7 +167,7 @@ if __name__ == '__main__':
     start_time = time.time()
     UUID = str(uuid.uuid4())[-4:]
 
-    filename = f"centris_{today}_{UUID}_app.log",
+    filename = f"centris_{today}_{UUID}_app.log"
     file_handler = logging.FileHandler(filename)
     file_handler.setLevel(logging.INFO)
     format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
