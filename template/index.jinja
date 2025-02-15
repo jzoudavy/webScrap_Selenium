@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+table, th, td {
+  border:1px solid black;
+}
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <title>ProperTies</title>
+</head>
+<body>
+
+<table>
+  <tr>
+    <th>New MLS Listings</th>
+
+  </tr>
+
+
+    {% for mls_id in mls %}  <tr>
+        <td>
+            <a href="https://www.centris.ca/en/condos~for-sale~brossard/{{mls_id}}?view=Summary" target="_blank">{{mls_id}}</a>
+        </td>  </tr>
+    {% endfor %}
+
+
+</table>
+
+
+<table>
+   <tr>
+     <th>MLS</th>
+     <th>Old Price</th>
+     <th>New Price</th>
+   </tr>
+   {% for item, row in data.items() %}
+    <tr>
+        <td>
+            <a href="https://www.centris.ca/en/condos~for-sale~brossard/{{item}}?view=Summary" target="_blank">{{item}}</a>
+        </td>
+        <td>
+             {{row['old_price']}}
+        </td>
+        <td>
+             {{row['new_price']}}
+        </td>
+
+    </tr>
+    {% endfor %}
+
+
+
+
+</table>
+
+</body>
+</html>
