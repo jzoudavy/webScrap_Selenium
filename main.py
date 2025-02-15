@@ -182,9 +182,15 @@ if __name__ == '__main__':
         chrome_options.add_experimental_option("detach", True)
 
         driver_path = 'C:\\WebDriver\\bin\\chromedriver132\\chromedriver.exe'
+
+
         options = webdriver.ChromeOptions()
-        service = ChromeService(executable_path=driver_path)
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        if os.path.exists(driver_path):
+            service = ChromeService(executable_path=driver_path)
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+        else:
+            service = ChromeService()
+            driver = webdriver.Chrome(service=service, options=chrome_options)
 
         centris_list = []
 
