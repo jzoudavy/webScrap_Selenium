@@ -67,8 +67,8 @@ def scrap_pages(driver):
         price = listing.find_element(By.XPATH, './/*[@itemprop="price"]//following-sibling::span[1]').text
 
         mls = listing.find_element(By.XPATH, './/*[@class="a-more-detail"]').get_attribute('data-mlsnumber')
-        #logging.info(f"Trowling through centris listing page: {mls}")
-
+        logging.info(f"Trowling through centris listing page: {mls}")
+        file_handler.flush()
 
         prop_type = listing.find_element(By.XPATH,".//div[@class='location-container']/div[@class='category']").text
 
@@ -139,6 +139,7 @@ def flag_new_listings(latest_file, secondLatest_file):
     logging.info(removed_entries)
     logging.info(f"price changes: ")
     logging.info(changed_prices_df)
+    file_handler.flush()
 
 
     interesting_property_determinator(latest_panda, new_entries, changed_prices_df)
@@ -166,10 +167,16 @@ if __name__ == '__main__':
     start_time = time.time()
     UUID = str(uuid.uuid4())[-4:]
 
+    filename = f"centris_{today}_{UUID}_app.log",
+    file_handler = logging.FileHandler(filename)
+    file_handler.setLevel(logging.INFO)
+    format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(format)
+
+    # Set up logging configuration
     logging.basicConfig(
-        filename=f"centris_{today}_{UUID}_app.log",
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s"
+        level=logging.DEBUG,
+        handlers=[file_handler],
     )
 
     skip_scrape= False
@@ -205,32 +212,33 @@ if __name__ == '__main__':
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
 
-        for i in range(0, int(total_pages)):
-        #for i in range(1):
+        #for i in range(0, int(total_pages)):
+        for i in range(10):
 
             try:
                 scrap_pages(driver)
                 driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
-                time.sleep(0.5)
+                time.sleep(1)
             except ElementClickInterceptedException as initial_error:
                 try:
                     if len(driver.find_elements(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']")) > 0:
                         driver.find_element(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']").click()
-                        time.sleep(0.5)
+                        time.sleep(1)
                     print('pop-up closed')
                     scrap_pages(driver)
                     driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
-                    time.sleep(0.3)
+                    time.sleep(1)
                 except NoSuchElementException:
                     raise initial_error
 
         for item in centris_list:
             mls=item['mls']
             summaryURL = f'https://www.centris.ca/en/condos~for-sale~brossard/{mls}?view=Summary'
-            #logging.info(f"Getting detailed information for : {summaryURL}")
+            logging.info(f"Getting detailed information for : {summaryURL}")
+            file_handler.flush()
 
             driver.get(summaryURL)
-            time.sleep(1)
+            time.sleep(5)
 
             carac_title = driver.find_elements(By.CLASS_NAME, 'carac-title')
 
