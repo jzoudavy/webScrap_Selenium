@@ -68,7 +68,7 @@ def scrap_pages(driver):
 
         mls = listing.find_element(By.XPATH, './/*[@class="a-more-detail"]').get_attribute('data-mlsnumber')
         logging.info(f"Trowling through centris listing page: {mls}")
-        file_handler.flush()
+        logging.flush()
 
         prop_type = listing.find_element(By.XPATH,".//div[@class='location-container']/div[@class='category']").text
 
@@ -139,7 +139,7 @@ def flag_new_listings(latest_file, secondLatest_file):
     logging.info(removed_entries)
     logging.info(f"price changes: ")
     logging.info(changed_prices_df)
-    file_handler.flush()
+    logging.flush()
 
 
     interesting_property_determinator(latest_panda, new_entries, changed_prices_df)
@@ -172,11 +172,12 @@ if __name__ == '__main__':
     UUID = str(uuid.uuid4())[-4:]
 
     filename = f"centris_{today}_{UUID}_app.log"
-    file_handler = logging.FileHandler(filename)
-    file_handler.setLevel(logging.INFO)
-    format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(format)
 
+    logging.basicConfig(
+        filename = filename,
+        format = "{asctime} - {levelname} - {message}",
+        datefmt = "%Y-%m-%d %H:%M",
+    )
 
     if not args.skip_scrape:
 
@@ -238,7 +239,7 @@ if __name__ == '__main__':
             mls=item['mls']
             summaryURL = f'https://www.centris.ca/en/condos~for-sale~brossard/{mls}?view=Summary'
             logging.info(f"Getting detailed information for : {summaryURL}")
-            file_handler.flush()
+            logging.flush()
 
             driver.get(summaryURL)
             time.sleep(5)
