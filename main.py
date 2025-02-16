@@ -165,6 +165,9 @@ if __name__ == '__main__':
     parser.add_argument("-tp","--total_pages", type=int, help='number of pages to scrape')
     args = parser.parse_args()
 
+    logging.info(f"We are starting the app")
+    logging.info(f"We are scraping : {args.total_pages}")
+
     today=datetime.now()
     today=today.strftime("%Y%m%d")
     start_time = time.time()
@@ -210,7 +213,7 @@ if __name__ == '__main__':
         driver.find_element(By.ID, 'didomi-notice-agree-button').click()
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
-        logging.info(f"We are scraping : {args.total_pages}")
+
         if args.total_pages:
             total = args.total_pages
         else:
