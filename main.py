@@ -160,27 +160,32 @@ def flag_changes():
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--skip_scrape", type=bool, default=False, help='dont scrape the webpage')
-    parser.add_argument("-tp","--total_pages", type=int, help='number of pages to scrape')
-    args = parser.parse_args()
-
-    logging.info(f"We are starting the app")
-    logging.info(f"We are scraping : {args.total_pages}")
-
     today=datetime.now()
     today=today.strftime("%Y%m%d")
     start_time = time.time()
     UUID = str(uuid.uuid4())[-4:]
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--skip_scrape", type=bool, default=False, help='dont scrape the webpage')
+    parser.add_argument("-tp","--total_pages", type=int, help='number of pages to scrape')
+    args = parser.parse_args()
+
+
+
     filename = f"centris_{today}_{UUID}_app.log"
 
     logging.basicConfig(
-        filename = filename,
+        filename=filename,
         level=logging.INFO,
-        datefmt = "%Y-%m-%d %H:%M",
+        datefmt="%Y-%m-%d %H:%M",
         force=True
     )
+
+    logging.info(f"We are starting the app")
+    logging.info(f"We are scraping : {args.total_pages}")
+
+
+
 
     if not args.skip_scrape:
 
