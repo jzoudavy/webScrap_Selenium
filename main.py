@@ -209,7 +209,7 @@ if __name__ == '__main__':
         driver.find_element(By.ID, 'didomi-notice-agree-button').click()
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
-        logging.info(f"Getting detailed information for : {args.total_pages}")
+        logging.info(f"We are scraping : {args.total_pages}")
         if args.total_pages:
             total = args.total_pages
         else:
@@ -221,16 +221,16 @@ if __name__ == '__main__':
             try:
                 scrap_pages(driver)
                 driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
-                time.sleep(1)
+                time.sleep(3)
             except ElementClickInterceptedException as initial_error:
                 try:
                     if len(driver.find_elements(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']")) > 0:
                         driver.find_element(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']").click()
-                        time.sleep(1)
+                        time.sleep(3)
                     print('pop-up closed')
                     scrap_pages(driver)
                     driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
-                    time.sleep(1)
+                    time.sleep(3)
                 except NoSuchElementException:
                     raise initial_error
 
