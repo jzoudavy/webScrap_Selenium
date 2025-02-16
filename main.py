@@ -177,11 +177,6 @@ if __name__ == '__main__':
     format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(format)
 
-    # Set up logging configuration
-    logging.basicConfig(
-        level=logging.DEBUG,
-        handlers=[file_handler],
-    )
 
     if not args.skip_scrape:
 
@@ -214,11 +209,11 @@ if __name__ == '__main__':
         driver.find_element(By.ID, 'didomi-notice-agree-button').click()
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
-
+        logging.info(f"Getting detailed information for : {args.total_pages}")
         if args.total_pages:
             total = args.total_pages
         else:
-            total=total=int(total_pages)
+            total=int(total_pages)
 
         for i in range(0, total):
 
