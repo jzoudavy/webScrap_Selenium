@@ -1,9 +1,9 @@
-from sqlite3 import Error
+
 import logging
-import numpy as np
+
 from selenium import webdriver
 from selenium.common import ElementClickInterceptedException, NoSuchElementException
-
+import argparse
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -161,6 +161,10 @@ def flag_changes():
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--skip_scrape", type=bool, default=False, help='dont scrape the webpage')
+    parser.add_argument("-tp","--total_pages", type=int, help='number of pages to scrape')
+    args = parser.parse_args()
 
     today=datetime.now()
     today=today.strftime("%Y%m%d")
@@ -179,8 +183,7 @@ if __name__ == '__main__':
         handlers=[file_handler],
     )
 
-    skip_scrape= False
-    if not skip_scrape:
+    if not args.skip_scrape:
 
 
 
@@ -212,8 +215,13 @@ if __name__ == '__main__':
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
 
-        #for i in range(0, int(total_pages)):
-        for i in range(10):
+        if args.total_pages:
+            total = args.total_pages
+        else:
+            total=total=int(total_pages)
+
+        for i in range(0, total):
+
 
             try:
                 scrap_pages(driver)
