@@ -111,16 +111,17 @@ if __name__ == '__main__':
         url = 'https://www.centris.ca/en/properties~for-sale~brossard?view=Thumbnail'
 
         driver.get(url)
+        '''
         time.sleep(5)
         driver.find_element(By.ID, 'didomi-notice-agree-button').click()
-
+       
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
 
         if args.total_pages is not None:
             total = args.total_pages
         else:
             total=int(total_pages)
-        ''' 
+        
         for i in range(0, total):
 
 
