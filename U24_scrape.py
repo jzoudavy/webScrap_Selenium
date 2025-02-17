@@ -31,30 +31,17 @@ def scrap_pages(driver):
 
     for listing in listings:
 
-        str_price = listing.find_element(By.XPATH, './/*[@itemprop="price"]//following-sibling::span[1]').text
-        str_price=str_price.replace('$','')
-        str_price=str_price.replace(',', '')
-        price=int(str_price)
+        price=12333
 
-        mls = listing.find_element(By.XPATH, './/*[@class="a-more-detail"]').get_attribute('data-mlsnumber')
-        logging.info(f"Trowling through centris listing page: {mls}")
+        mls = '12333'
 
-        prop_type = listing.find_element(By.XPATH,".//div[@class='location-container']/div[@class='category']").text
-
-        addr = listing.find_element(By.XPATH, ".//div[@class='location-container']/div[@class='address']").text
-        city = addr.split('\n')[1]
-        sector = addr.split('\n')[2]
-        if prop_type != 'Land for sale' and prop_type != 'Lot for sale':
-            try:
-                bedrooms = int(listing.find_element(By.XPATH, ".//div[@class='cac']").text)
-            except NoSuchElementException:
-                bedrooms = 0
-            try:
-                bathrooms = int(listing.find_element(By.XPATH, ".//div[@class='sdb']").text)
-            except NoSuchElementException:
-                bathrooms = 0
-
-            listing_item = {
+        prop_type = 'test'
+        addr = 'test'
+        city = 'test'
+        sector = 'test'
+        bedrooms = 1
+        bathrooms=1
+        listing_item = {
                 'mls': mls,
                 'price': price,
                 'address': addr,
@@ -68,8 +55,7 @@ def scrap_pages(driver):
                 'year': year,
                 'parking': parking
             }
-
-            centris_list.append(listing_item)
+        centris_list.append(listing_item)
 
 
 
@@ -134,7 +120,7 @@ if __name__ == '__main__':
             total = args.total_pages
         else:
             total=int(total_pages)
-
+        ''' 
         for i in range(0, total):
 
 
@@ -154,7 +140,7 @@ if __name__ == '__main__':
                 except NoSuchElementException:
                     raise initial_error
 
-
+        '''
 
 
 
