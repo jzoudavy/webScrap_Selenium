@@ -18,11 +18,15 @@ from jinja2 import Environment, FileSystemLoader
 
 
 def interesting_property_determinator(latest_panda, new_entries, changed_prices_df):
-    interesting=latest_panda.loc[new_entries]['bedrooms'] >= 2
+
+    interesting=latest_panda.loc[new_entries]
+
+    interesting=(interesting['bedrooms'] >= 2) & (interesting['price'] <= 600000)& (interesting['price'] >= 400000)
+
     filtered_list = interesting.index.tolist()
 
 
-    logging.info(f"2 bedroom or more: ")
+    logging.info(f"2 bedroom or more and 600k or less: ")
     logging.info(filtered_list)
 
     #find px changes
@@ -64,7 +68,10 @@ def scrap_pages(driver):
 
     for listing in listings:
 
-        price = listing.find_element(By.XPATH, './/*[@itemprop="price"]//following-sibling::span[1]').text
+        str_price = listing.find_element(By.XPATH, './/*[@itemprop="price"]//following-sibling::span[1]').text
+        str_price=str_price.replace('$','')
+        str_price=str_price.replace(',', '')
+        price=int(str_price)
 
         mls = listing.find_element(By.XPATH, './/*[@class="a-more-detail"]').get_attribute('data-mlsnumber')
         logging.info(f"Trowling through centris listing page: {mls}")
@@ -184,18 +191,11 @@ if __name__ == '__main__':
     logging.info(f"We are starting the app")
     logging.info(f"We are scraping : {args.total_pages}")
 
-
-
-
     if not args.skip_scrape:
-
-
-
-
         chrome_options = Options()
         chrome_options.add_experimental_option("detach", True)
         #headless and block anti-headless
-        chrome_options.add_argument('--headless')
+        #chrome_options.add_argument('--headless')
         user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
         chrome_options.add_argument(f'user-agent={user_agent}')
 
@@ -219,7 +219,7 @@ if __name__ == '__main__':
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
 
-        if args.total_pages:
+        if args.total_pages is not None:
             total = args.total_pages
         else:
             total=int(total_pages)
