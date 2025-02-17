@@ -93,25 +93,33 @@ if __name__ == '__main__':
         chrome_options.add_experimental_option("detach", True)
         #headless and block anti-headless
         chrome_options.add_argument('--headless')
-        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
+        user_agent_win = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.6943.53 Safari/537.36'
+        user_agent_u24 = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.6943.53 Safari/537.36'
+
+        driver_path_win = 'C:\\WebDriver\\bin\\chromedriver132\\chromedriver.exe'
+        driver_path_u24 = r'/usr/lib/chromium-browser/chromedriver'
+
+        if os.path.exists(driver_path_win):
+            user_agent = user_agent_win
+        else:
+            user_agent = user_agent_u24
+
         chrome_options.add_argument(f'user-agent={user_agent}')
 
-        driver_path = 'C:\\WebDriver\\bin\\chromedriver132\\chromedriver.exe'
-        driver_path_ubuntu = r'/usr/lib/chromium-browser/chromedriver'
 
-        if os.path.exists(driver_path):
-            service = ChromeService(executable_path=driver_path)
+        if os.path.exists(driver_path_win):
+            service = ChromeService(executable_path=driver_path_win)
         else:
-            service = ChromeService(executable_path=driver_path_ubuntu)
+            service = ChromeService(executable_path=driver_path_u24)
 
         driver = webdriver.Chrome(service=service, options=chrome_options)
 
         centris_list = []
 
         url = 'https://www.centris.ca/en/properties~for-sale~brossard?view=Thumbnail'
-
-        driver.get(url)
         '''
+        driver.get(url)
+       
         time.sleep(5)
         driver.find_element(By.ID, 'didomi-notice-agree-button').click()
        
