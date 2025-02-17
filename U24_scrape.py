@@ -107,7 +107,7 @@ if __name__ == '__main__':
         chrome_options.add_experimental_option("detach", True)
         #headless and block anti-headless
         chrome_options.add_argument('--headless')
-        user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
         chrome_options.add_argument(f'user-agent={user_agent}')
 
         driver_path = 'C:\\WebDriver\\bin\\chromedriver132\\chromedriver.exe'
