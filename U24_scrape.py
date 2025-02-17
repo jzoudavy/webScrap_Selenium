@@ -154,35 +154,6 @@ if __name__ == '__main__':
                 except NoSuchElementException:
                     raise initial_error
 
-        for item in centris_list:
-            mls=item['mls']
-            summaryURL = f'https://www.centris.ca/en/condos~for-sale~brossard/{mls}?view=Summary'
-            logging.info(f"Getting detailed information for : {summaryURL}")
-
-            driver.get(summaryURL)
-            time.sleep(5)
-
-            carac_title = driver.find_elements(By.CLASS_NAME, 'carac-title')
-
-            carac_value = driver.find_elements(By.CLASS_NAME, 'carac-value')
-
-
-            carac_dict = {i.text: j.text for i,j in zip(carac_title, carac_value)}
-
-            item['year']= carac_dict['Year built']
-            if item['property type']=='Condo for sale':
-                if 'Net area' in carac_dict.keys():
-                    item['living sqft'] = carac_dict['Net area']
-            if item['property type']=='Duplex for sale':
-                item['living sqft'] = carac_dict['Lot area']
-            if item['property type']=='House for sale':
-                if 'Living area' in carac_dict.keys():
-                    item['living sqft'] = carac_dict['Living area']
-                if 'Lot area' in carac_dict.keys():
-                    item['lot sqft'] = carac_dict['Lot area']
-            if 'Parking (total)' in carac_dict.keys():
-                item['parking'] = carac_dict['Parking (total)']
-
 
 
 
