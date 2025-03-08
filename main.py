@@ -234,6 +234,7 @@ if __name__ == '__main__':
         chrome_options.add_experimental_option("detach", True)
         #headless and block anti-headless
         chrome_options.add_argument('--headless')
+        chrome_options.add_argument("--window-size=2560,1440")
         user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.6943.53 Safari/537.36'
         chrome_options.add_argument(f'user-agent={user_agent}')
 
@@ -253,7 +254,7 @@ if __name__ == '__main__':
 
         driver.get(url)
         time.sleep(3)
-        driver.find_element(By.ID, 'didomi-notice-agree-button').click()
+        driver.find_element(By.ID, 'didomi-notice-agree-button').click() #respect privacy button
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
 
