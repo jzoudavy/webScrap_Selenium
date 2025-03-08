@@ -1,6 +1,7 @@
 
 import logging
-
+import sys
+import numpy as np
 from selenium import webdriver
 from selenium.common import ElementClickInterceptedException, NoSuchElementException
 import argparse
@@ -15,6 +16,8 @@ import glob
 import os
 import os.path
 from jinja2 import Environment, FileSystemLoader
+import paramiko
+import yaml
 
 
 def interesting_property_determinator(latest_panda, new_entries, changed_prices_df):
@@ -45,6 +48,26 @@ def interesting_property_determinator(latest_panda, new_entries, changed_prices_
         indexPage.write(output_from_parsed_template)
 
 
+    with open('config.yaml', 'r') as file:
+        prime_service = yaml.safe_load(file)
+        host = prime_service['host']['ip']
+        port = prime_service['host']['port']
+        password = prime_service['host']['password']
+        username = prime_service['host']['username']
+
+    transport_UploadFile = paramiko.Transport((host, port))
+
+    transport_UploadFile.connect(username=username, password=password)
+
+    sftp = paramiko.SFTPClient.from_transport(transport_UploadFile)
+
+    sftp.put("index.html", f"/var/www/html/index.html")
+
+
+    sftp.close()
+    transport_UploadFile.close()
+
+
 
 
 def record_data(centris_list):
@@ -54,6 +77,8 @@ def record_data(centris_list):
     today=today.strftime("%Y%m%d")
     today_file_path=f"./Centris_{today}_{UUID}.pkl"
     pd.to_pickle(original_df, today_file_path)
+    time.sleep(10)
+    logging.info(f"waited 10 seconds for file write to complete. ")
 
 
 
@@ -114,9 +139,16 @@ def scrap_pages(driver):
 
 def flag_new_listings(latest_file, secondLatest_file):
 
-
-    latest_panda = pd.read_pickle(latest_file)
-    secondLatest_panda = pd.read_pickle(secondLatest_file)
+    try:
+        latest_panda = pd.read_pickle(latest_file)
+    except Exception as e:
+        logging.exception(e)
+    try:
+        secondLatest_panda = pd.read_pickle(secondLatest_file)
+    except Exception as e:
+        logging.exception(e)
+    logging.info(f"latest file: {latest_file}")
+    logging.info(f"2nd latest file: {secondLatest_file}")
 
 
     latest_panda=latest_panda.set_index('mls')
@@ -182,6 +214,7 @@ if __name__ == '__main__':
     filename = f"centris_{today}_{UUID}_app.log"
 
     logging.basicConfig(
+        format='%(asctime)s %(levelname)-8s %(message)s',
         filename=filename,
         level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M",
@@ -195,7 +228,7 @@ if __name__ == '__main__':
         chrome_options = Options()
         chrome_options.add_experimental_option("detach", True)
         #headless and block anti-headless
-        #chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--headless')
         user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
         chrome_options.add_argument(f'user-agent={user_agent}')
 
@@ -214,7 +247,7 @@ if __name__ == '__main__':
         url = 'https://www.centris.ca/en/properties~for-sale~brossard?view=Thumbnail'
 
         driver.get(url)
-        time.sleep(5)
+        time.sleep(3)
         driver.find_element(By.ID, 'didomi-notice-agree-button').click()
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
@@ -230,16 +263,16 @@ if __name__ == '__main__':
             try:
                 scrap_pages(driver)
                 driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
-                time.sleep(3)
+                time.sleep(2)
             except ElementClickInterceptedException as initial_error:
                 try:
                     if len(driver.find_elements(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']")) > 0:
                         driver.find_element(By.XPATH, ".//div[@class='DialogInsightLightBoxCloseButton']").click()
-                        time.sleep(3)
+                        time.sleep(2)
                     print('pop-up closed')
                     scrap_pages(driver)
                     driver.find_element(By.CSS_SELECTOR, 'li.next> a').click()
-                    time.sleep(3)
+                    time.sleep(2)
                 except NoSuchElementException:
                     raise initial_error
 
@@ -249,7 +282,7 @@ if __name__ == '__main__':
             logging.info(f"Getting detailed information for : {summaryURL}")
 
             driver.get(summaryURL)
-            time.sleep(5)
+            time.sleep(3)
 
             carac_title = driver.find_elements(By.CLASS_NAME, 'carac-title')
 
