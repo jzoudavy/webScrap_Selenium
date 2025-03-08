@@ -43,29 +43,34 @@ def interesting_property_determinator(latest_panda, new_entries, changed_prices_
     index_template = env.get_template('index.jinja')
     output_from_parsed_template = index_template.render(mls=filtered_list, data =px_change)
 
-    # write the parsed template
-    with open("index.html", "w") as indexPage:
-        indexPage.write(output_from_parsed_template)
+
+    if os.name == 'nt':
+        # write the parsed template
+        with open("index.html", "w") as indexPage:
+            indexPage.write(output_from_parsed_template)
 
 
-    with open('config.yaml', 'r') as file:
-        prime_service = yaml.safe_load(file)
-        host = prime_service['host']['ip']
-        port = prime_service['host']['port']
-        password = prime_service['host']['password']
-        username = prime_service['host']['username']
+        with open('config.yaml', 'r') as file:
+            prime_service = yaml.safe_load(file)
+            host = prime_service['host']['ip']
+            port = prime_service['host']['port']
+            password = prime_service['host']['password']
+            username = prime_service['host']['username']
 
-    transport_UploadFile = paramiko.Transport((host, port))
+        transport_UploadFile = paramiko.Transport((host, port))
 
-    transport_UploadFile.connect(username=username, password=password)
+        transport_UploadFile.connect(username=username, password=password)
 
-    sftp = paramiko.SFTPClient.from_transport(transport_UploadFile)
+        sftp = paramiko.SFTPClient.from_transport(transport_UploadFile)
 
-    sftp.put("index.html", f"/var/www/html/index.html")
+        sftp.put("index.html", f"/var/www/html/index.html")
 
 
-    sftp.close()
-    transport_UploadFile.close()
+        sftp.close()
+        transport_UploadFile.close()
+    else: # write the parsed template
+        with open("/var/www/html/index.html", "w") as indexPage:
+            indexPage.write(output_from_parsed_template)
 
 
 
@@ -229,14 +234,14 @@ if __name__ == '__main__':
         chrome_options.add_experimental_option("detach", True)
         #headless and block anti-headless
         chrome_options.add_argument('--headless')
-        user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.6943.53 Safari/537.36'
         chrome_options.add_argument(f'user-agent={user_agent}')
 
         driver_path = 'C:\\WebDriver\\bin\\chromedriver132\\chromedriver.exe'
-        driver_path_ubuntu = r'/usr/lib/chromium-browser/chromedriver'
+        driver_path_ubuntu = r'/usr/local/bin/chromedriver'
 
-        if os.path.exists(driver_path):
-            service = ChromeService(executable_path=driver_path)
+        if os.name == 'nt':
+            service = ChromeService(executable_path=driver_path) #win
         else:
             service = ChromeService(executable_path=driver_path_ubuntu)
 
