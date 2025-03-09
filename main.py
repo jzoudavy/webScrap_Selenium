@@ -214,9 +214,10 @@ if __name__ == '__main__':
     parser.add_argument("-tp","--total_pages", type=int, help='number of pages to scrape')
     args = parser.parse_args()
 
-
-
-    filename = f"centris_{today}_{UUID}_app.log"
+    if os.name == 'nt':
+        filename = f"centris_{today}_{UUID}_app.log"
+    else:
+        filename = f"/home/bloom/centris_scrap/webScrap_Selenium/centris_{today}_{UUID}_app.log"
 
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
