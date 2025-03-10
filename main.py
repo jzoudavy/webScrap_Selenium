@@ -80,7 +80,12 @@ def record_data(centris_list):
 
     today=datetime.now()
     today=today.strftime("%Y%m%d")
-    today_file_path=f"./Centris_{today}_{UUID}.pkl"
+
+    if os.name == 'nt':
+        today_file_path = f"./centris_{today}_{UUID}.pkl"
+    else:
+        today_file_path = f"/home/bloom/centris_scrap/webScrap_Selenium/centris_{today}_{UUID}.pkl"
+
     pd.to_pickle(original_df, today_file_path)
     time.sleep(10)
     logging.info(f"waited 10 seconds for file write to complete. ")
