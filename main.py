@@ -3,11 +3,13 @@ import logging
 import sys
 import numpy as np
 from selenium import webdriver
-from selenium.common import ElementClickInterceptedException, NoSuchElementException
+from selenium.common import ElementClickInterceptedException, NoSuchElementException, StaleElementReferenceException
 import argparse
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.ui import WebDriverWait
 import time
 import pandas as pd
 from datetime import datetime
@@ -97,7 +99,13 @@ def scrap_pages(driver):
     year=0
     parking=0
 
+    ignored_exceptions = StaleElementReferenceException
+    your_element = WebDriverWait(driver, 5, ignored_exceptions=ignored_exceptions)\
+        .until(expected_conditions.presence_of_element_located((By.XPATH, ".//div[@class='cac']")))
+
+
     listings = driver.find_elements(By.CLASS_NAME, 'description')
+
 
     if listings[-1].text.split('/n')[0] == '': del listings[-1]
 
@@ -109,7 +117,6 @@ def scrap_pages(driver):
         price=int(str_price)
 
         mls = listing.find_element(By.XPATH, './/*[@class="a-more-detail"]').get_attribute('data-mlsnumber')
-        logging.info(f"Trowling through centris listing page: {mls}")
 
         prop_type = listing.find_element(By.XPATH,".//div[@class='location-container']/div[@class='category']").text
 
@@ -117,6 +124,7 @@ def scrap_pages(driver):
         city = addr.split('\n')[1]
         sector = addr.split('\n')[2]
         logging.info(f"Trowling through centris listing page: {mls} in city: {city} sector {sector}")
+
         if prop_type != 'Land for sale' and prop_type != 'Lot for sale':
             try:
                 bedrooms = int(listing.find_element(By.XPATH, ".//div[@class='cac']").text)
