@@ -272,6 +272,7 @@ if __name__ == '__main__':
             total=int(total_pages)
 
         for i in range(0, total):
+            logging.info(f"scraping page {i} out of {total}")
 
 
             try:
