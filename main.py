@@ -204,6 +204,8 @@ def flag_changes():
         latest_file=files[-1]
         secondLatest_file=files[-2]
         flag_new_listings(latest_file, secondLatest_file)
+    else:
+        logging.info(f"no comparison done for there is less than 2 files")
 
 
 
