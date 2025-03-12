@@ -324,7 +324,7 @@ if __name__ == '__main__':
 
 
 
-        driver.close()
+        driver.quit()
 
         record_data(centris_list)
 
