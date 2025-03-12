@@ -235,7 +235,7 @@ if __name__ == '__main__':
     )
 
     logging.info(f"We are starting the app")
-    logging.info(f"We are scraping : {args.total_pages}")
+    logging.info(f"scraping # page override, None for all: {args.total_pages}")
 
     if not args.skip_scrape:
         chrome_options = Options()
