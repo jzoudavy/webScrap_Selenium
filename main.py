@@ -116,6 +116,7 @@ def scrap_pages(driver):
         addr = listing.find_element(By.XPATH, ".//div[@class='location-container']/div[@class='address']").text
         city = addr.split('\n')[1]
         sector = addr.split('\n')[2]
+        logging.info(f"Trowling through centris listing page: {mls} in city: {city} sector {sector}")
         if prop_type != 'Land for sale' and prop_type != 'Lot for sale':
             try:
                 bedrooms = int(listing.find_element(By.XPATH, ".//div[@class='cac']").text)
@@ -229,7 +230,7 @@ if __name__ == '__main__':
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
         filename=filename,
-        level=logging.INFO,
+        level=logging.DEBUG,
         datefmt="%Y-%m-%d %H:%M",
         force=True
     )
