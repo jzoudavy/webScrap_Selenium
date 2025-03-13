@@ -270,7 +270,11 @@ if __name__ == '__main__':
         url = 'https://www.centris.ca/en/properties~for-sale~brossard?view=Thumbnail'
 
         driver.get(url)
-        time.sleep(3)
+
+        your_element = WebDriverWait(driver, 5, ignored_exceptions=NoSuchElementException) \
+            .until(expected_conditions.presence_of_element_located((By.ID, 'didomi-notice-agree-button')))
+
+
         driver.find_element(By.ID, 'didomi-notice-agree-button').click() #respect privacy button
 
         total_pages = driver.find_element(By.CLASS_NAME, 'pager-current').text.split('/')[1].strip()
